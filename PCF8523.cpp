@@ -363,6 +363,7 @@ void PCF8523::rtcWriteReg(uint8_t address, uint8_t data) {
 // Example: PCF8523.set_alarm(10,5,45)
 // Set alarm at day = 5, 5:45 a.m.
 void PCF8523::setAlarm(uint8_t day_alarm, uint8_t hour_alarm,uint8_t minute_alarm ) {
+ 
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
   if(minute_alarm > 0){
@@ -483,7 +484,6 @@ void PCF8523::enableAlarm(bool enable)
 		// Clear any existing flags
 		ackAlarm();	
 		// Enable the AIE bit
-		tmp = 0;
 		tmp |= _BV(PCF8523_CONTROL_1_AIE_BIT);	
 
 	}
@@ -496,7 +496,7 @@ void PCF8523::enableAlarm(bool enable)
 void PCF8523::ackAlarm(void)
 {
 	uint8_t tmp;
-    tmp = rtcReadReg(PCF8523_CONTROL_2);
+  tmp = rtcReadReg(PCF8523_CONTROL_2);
 	
 	tmp &= ~_BV(PCF8523_CONTROL_2_AF_BIT);	// Clear the AF bit	
 
@@ -678,6 +678,27 @@ bool PCF8523::rtcBatteryLow(void)
 		return false;
 	}
 }
+
+void PCF8523::rtcCapSelect(eCAP_SEL value)
+{
+  uint8_t tmp;
+  tmp = rtcReadReg(PCF8523_CONTROL_1);
+  if(value == eCAP_7pF)
+  {
+      // Clear Cap_sel bit
+      tmp &= ~_BV(PCF8523_CONTROL_1_CAP_SEL_BIT); 
+
+  } 
+  else
+  {
+      // Set Cap_Sel bit
+      tmp |= _BV(PCF8523_CONTROL_1_CAP_SEL_BIT);
+
+  }
+  rtcWriteReg(PCF8523_CONTROL_1 , tmp);
+  return;
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // RTC_Millis implementation

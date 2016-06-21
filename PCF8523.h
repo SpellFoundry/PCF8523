@@ -136,6 +136,11 @@ typedef enum {
 	eTB_HOUR
 } eTIMER_TIMEBASE;
 
+typedef enum {
+	eCAP_7pF = 0,
+	eCAP_12_5pF
+}eCAP_SEL;
+
 class TimeSpan;
 
 // Simple general-purpose date/time class (no TZ / DST / leap second handling!)
@@ -230,6 +235,7 @@ class PCF8523{
 	protected:
 		void stop_32768_clkout();
 		uint8_t clearRtcInterruptFlags();
+		void 	rtcCapSelect(eCAP_SEL value);
 
 
 };
