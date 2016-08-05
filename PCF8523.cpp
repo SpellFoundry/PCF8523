@@ -35,7 +35,7 @@
  */
 
 #include <Wire.h>
-#include "pcf8523.h"
+#include "PCF8523.h"
 
 #ifdef __AVR__
  #include <avr/pgmspace.h>
