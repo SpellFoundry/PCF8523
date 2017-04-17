@@ -119,13 +119,13 @@ const uint8_t RTC_CLKOUT_DISABLED = ((1<<3) | (1<<4) | (1<<5));
 #define PCF8523_TMR_CLKOUT_CTRL_TBC_BIT		0
 
 typedef enum {
-	eSunday = 0,
-	eMonday,
-	eTuesday,
-	eWednesday,
-	eThursday,
-	eFriday,
-	eSaturday
+	eSUNDAY = 0,
+	eMONDAY,
+	eTUESDAY,
+	eWEDNESDAY,
+	eTHURSDAY,
+	eFRIDAY,
+	eSATURDAY
 } eWEEKDAYS;
 
 typedef enum {
@@ -140,6 +140,29 @@ typedef enum {
 	eCAP_7pF = 0,
 	eCAP_12_5pF
 }eCAP_SEL;
+
+typedef enum {
+	eAM = 0,
+	ePM
+}eAM_PM;
+
+typedef enum {
+	eTWENTYFOURHOUR = 0,
+	eTWELVEHOUR
+}e12_24;
+
+typedef struct {
+	uint8_t		minutes;
+	uint8_t		hours;
+	uint8_t     days;
+	eWEEKDAYS	weekdays;
+	e12_24		twentyFourHour;
+	eAM_PM		AmPm;
+	bool		minutesEnabled;
+	bool 		hoursEnabled;	
+	bool 		daysEnabled;
+	bool 		weekdaysEnabled;
+}ALARM_SETTINGS;
 
 class TimeSpan;
 
@@ -206,6 +229,7 @@ class PCF8523{
 		void setAlarm(uint8_t day_alarm, uint8_t hour_alarm,uint8_t minute_alarm );
 		void setWeekDayAlarm(eWEEKDAYS weekday_alarm, uint8_t hour_alarm,uint8_t minute_alarm);
 		void getAlarm(uint8_t* buf);
+		void getAlarm(ALARM_SETTINGS* settings);
 		void enableAlarm(bool enable);
 		void ackAlarm(void);
 
@@ -222,7 +246,9 @@ class PCF8523{
 		uint8_t isrunning(void);
 		void rtcStop(void);
 		void rtcStart(void);
-		bool rtcBatteryLow(void);	
+		bool rtcBatteryLow(void);
+		void setTwelveTwentyFourHour(e12_24 mode);
+		e12_24 getTwelveTwentyFourHour(void);	
 		
 		// Register Access
 		uint8_t rtcReadReg(uint8_t address);

@@ -35,7 +35,7 @@
  */
 
 #include <Wire.h>
-#include "pcf8523.h"
+#include "PCF8523.h"
 
 #ifdef __AVR__
  #include <avr/pgmspace.h>
@@ -362,34 +362,16 @@ void PCF8523::rtcWriteReg(uint8_t address, uint8_t data) {
 
 // Example: PCF8523.set_alarm(10,5,45)
 // Set alarm at day = 5, 5:45 a.m.
-void PCF8523::setAlarm(uint8_t day_alarm, uint8_t hour_alarm,uint8_t minute_alarm ) {
+void PCF8523::setAlarm(uint8_t day_alarm, uint8_t hour_alarm, uint8_t minute_alarm ) {
  
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
-  if(minute_alarm > 0){
-	// Enable
+	// Enable Minute
 	WIRE._I2C_WRITE(bin2bcd(minute_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(minute_alarm) | 0x80 );
-  }
-  if(hour_alarm > 0){
-	// Enable
+  // Enable Hour
 	WIRE._I2C_WRITE(bin2bcd(hour_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(hour_alarm) | 0x80);
-  }
-  if(day_alarm > 0){
-	// Enable
+	// Enable Day
 	WIRE._I2C_WRITE(bin2bcd(day_alarm) & ~0x80);
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(day_alarm) | 0x80);
-  }
   WIRE._I2C_WRITE(0x80);	// Disable WeekDay
   WIRE.endTransmission();
 }
@@ -397,22 +379,10 @@ void PCF8523::setAlarm(uint8_t day_alarm, uint8_t hour_alarm,uint8_t minute_alar
 void PCF8523::setAlarm(uint8_t hour_alarm,uint8_t minute_alarm ) {
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
-  if(minute_alarm > 0){
-	// Enable
+	// Enable Minute
 	WIRE._I2C_WRITE(bin2bcd(minute_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(minute_alarm) | 0x80 );
-  }
-  if(hour_alarm > 0){
-	// Enable
+	// Enable Hour
 	WIRE._I2C_WRITE(bin2bcd(hour_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(hour_alarm) | 0x80 );
-  }
   WIRE._I2C_WRITE(0x80);	// Disable Day	
   WIRE._I2C_WRITE(0x80);	// Disable WeekDay
   WIRE.endTransmission();
@@ -421,55 +391,97 @@ void PCF8523::setAlarm(uint8_t hour_alarm,uint8_t minute_alarm ) {
 void PCF8523::setAlarm(uint8_t minute_alarm ) {
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
-  if(minute_alarm > 0){
-	// Enable
+	// Enable Minute
 	WIRE._I2C_WRITE(bin2bcd(minute_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(minute_alarm) | 0x80 );
-  }
   WIRE._I2C_WRITE(0x80);	// Disable Hour	
   WIRE._I2C_WRITE(0x80);	// Disable Day	
   WIRE._I2C_WRITE(0x80);	// Disable WeekDay
   WIRE.endTransmission();
 }
 
-void PCF8523::setWeekDayAlarm(eWEEKDAYS weekday_alarm,uint8_t hour_alarm,uint8_t minute_alarm)
+void PCF8523::setWeekDayAlarm(eWEEKDAYS weekday_alarm,uint8_t hour_alarm, uint8_t minute_alarm)
 {
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
-  if(minute_alarm > 0){
-	// Enable
+	// Enable Minute
 	WIRE._I2C_WRITE(bin2bcd(minute_alarm) & ~0x80 );
-  }
-  else {
-	// Disable
-	WIRE._I2C_WRITE(bin2bcd(minute_alarm) | 0x80 );
-  }
-  if(hour_alarm > 0){
-	// Enable
+	// Enable Hour
 	WIRE._I2C_WRITE(bin2bcd(hour_alarm) & ~0x80 );
-  }
-  else {
-	WIRE._I2C_WRITE(bin2bcd(hour_alarm) | 0x80 );
-  }
-  WIRE._I2C_WRITE(0x80);			// Day
+  WIRE._I2C_WRITE(0x80);			// Disable Day
+  // Enable Weekday
   WIRE._I2C_WRITE(bin2bcd(weekday_alarm) & ~0x80);
   WIRE.endTransmission();
 }
 
 // Example: PCF8523.getAlarm(a);
-// Returns a[0] = alarm minutes, a[1] = alarm hour, a[2] = alarm day
+// Returns a[0] = alarm minutes, a[1] = alarm hour, a[2] = alarm day, a[3] = alarm weekday
 void PCF8523::getAlarm(uint8_t* buf) {
   WIRE.beginTransmission(PCF8523_ADDRESS);
   WIRE._I2C_WRITE(0x0A);
   WIRE.endTransmission();
-  WIRE.requestFrom((uint8_t) PCF8523_ADDRESS, (uint8_t)3);
-  for (uint8_t pos = 0; pos < 3; ++pos) {
-    buf[pos] = bcd2bin((WIRE._I2C_READ() & 0x7F));
+  WIRE.requestFrom((uint8_t) PCF8523_ADDRESS, (uint8_t)4);
+  for (uint8_t pos = 0; pos < 4; ++pos) {
+//   buf[pos] = bcd2bin((WIRE._I2C_READ() & 0x7F));  // remove the enable / disable
+     buf[pos] = bcd2bin(WIRE._I2C_READ());
   }
-  
+}
+void PCF8523::getAlarm(ALARM_SETTINGS* settings) {
+  uint8_t register_value;
+  uint8_t buf[4];
+  e12_24  twentyFourHour;
+
+  WIRE.beginTransmission(PCF8523_ADDRESS);
+  WIRE._I2C_WRITE(0x0A);
+  WIRE.endTransmission();
+  WIRE.requestFrom((uint8_t) PCF8523_ADDRESS, (uint8_t)4);
+  // Returns a[0] = alarm minutes, a[1] = alarm hour, a[2] = alarm day, a[3] = alarm weekday
+  for (uint8_t pos = 0; pos < 4; ++pos) {
+     buf[pos] = WIRE._I2C_READ();
+  }
+  // get the 24 hour mode
+  PCF8523::rtcReadReg(&register_value, 1, PCF8523_CONTROL_1);
+  twentyFourHour = (e12_24)!(register_value & 0x08);
+
+  // Get the minutes
+  settings->minutes = bcd2bin(buf[0] & 0x7F);
+  if(buf[0] & 0x80){
+    settings->minutesEnabled = false;
+  }
+  else{
+    settings->minutesEnabled = true; 
+  }
+  // Get the hours
+  if(twentyFourHour == eTWENTYFOURHOUR){
+    settings->hours = bcd2bin(buf[1] & 0x3F); 
+    settings->AmPm  = eAM;           
+  }
+  else {
+    settings->hours = bcd2bin(buf[1] & 0x1F);  
+    settings->AmPm  = (eAM_PM)(buf[1] & 0x20);       
+  }
+  if(buf[1] & 0x80) {
+    settings->hoursEnabled = false;
+  }
+  else {
+    settings->hoursEnabled = true; 
+  }
+  // Get the Days
+  settings->days = bcd2bin(buf[2] & 0x3F);
+  if(buf[2] & 0x80) {
+    settings->daysEnabled = false;
+  }
+  else {
+    settings->daysEnabled = true; 
+  }
+  // Get the weekdays
+  settings->weekdays = (eWEEKDAYS)(buf[3] & 0x07);
+  if(buf[3] & 0x80){
+    settings->weekdaysEnabled = false;
+  }
+  else{
+    settings->weekdaysEnabled = true; 
+  }
+
 }
 
 void PCF8523::enableAlarm(bool enable)
@@ -604,7 +616,7 @@ void PCF8523::setTimer2(eTIMER_TIMEBASE timebase,uint8_t value)
 	rtcWriteReg(PCF8523_TMR_B_REG , value);
 
 	// Clear any Timer B flags
-    tmp = rtcReadReg(PCF8523_CONTROL_2);
+  tmp = rtcReadReg(PCF8523_CONTROL_2);
 	
 	tmp &= ~_BV(PCF8523_CONTROL_2_CTBF_BIT);	// Clear the Timer B flag
 	tmp |= _BV(PCF8523_CONTROL_2_CTBIE_BIT);	// Enable Timer B interrupt
@@ -626,7 +638,7 @@ void PCF8523::ackTimer2(void)
 	uint8_t tmp;
 
 	// Clear any Timer B flags
-    tmp = rtcReadReg(PCF8523_CONTROL_2);
+  tmp = rtcReadReg(PCF8523_CONTROL_2);
 	
 	tmp &= ~_BV(PCF8523_CONTROL_2_CTBF_BIT);	// Clear the Timer A flag
 
@@ -697,6 +709,40 @@ void PCF8523::rtcCapSelect(eCAP_SEL value)
   }
   rtcWriteReg(PCF8523_CONTROL_1 , tmp);
   return;
+}
+
+void PCF8523::setTwelveTwentyFourHour(e12_24 mode)
+{
+  uint8_t tmp;
+  tmp = rtcReadReg(PCF8523_CONTROL_1);
+  if(mode == eTWENTYFOURHOUR) 
+  {
+      // Clear 12_24 flag
+      tmp &= ~_BV(PCF8523_CONTROL_1_1224_BIT);  
+  }
+  else 
+  {
+      // 12 hour Mode
+      // Set 12_24 bit
+      tmp |= _BV(PCF8523_CONTROL_1_1224_BIT);
+
+  }
+  rtcWriteReg(PCF8523_CONTROL_1 , tmp);
+  return;
+}
+
+e12_24 PCF8523::getTwelveTwentyFourHour(void)
+{
+  uint8_t tmp;
+  tmp = rtcReadReg(PCF8523_CONTROL_1);
+  if(tmp & _BV(PCF8523_CONTROL_1_1224_BIT))
+  {
+     return eTWELVEHOUR;
+  }
+  else
+  {
+     return eTWENTYFOURHOUR; 
+  }
 }
 
 

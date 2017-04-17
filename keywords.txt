@@ -14,6 +14,7 @@ getAlarm					KEYWORD2
 setAlarm					KEYWORD2
 setWeekDayAlarm				KEYWORD2
 enableAlarm					KEYWORD2
+ackAlarm					KEYWORD2	
 setTimer1					KEYWORD2
 getTimer1					KEYWORD2
 ackTimer1					KEYWORD2
@@ -25,6 +26,8 @@ isrunning					KEYWORD2
 rtcStop						KEYWORD2
 rtcStart					KEYWORD2
 rtcBatteryLow				KEYWORD2
+setTwelveTwentyFourHour		KEYWORD2
+getTwelveTwentyFourHour		KEYWORD2	
 rtcReadReg					KEYWORD2
 rtcWriteReg					KEYWORD2
 setBatterySwitchover		KEYWORD2	
