@@ -5,34 +5,34 @@
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-eWEEKDAYS		KEYWORD1
+eWEEKDAYS	KEYWORD1
 eTIMER_TIMEBASE	KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-getAlarm					KEYWORD2
-setAlarm					KEYWORD2
-setWeekDayAlarm				KEYWORD2
-enableAlarm					KEYWORD2
-ackAlarm					KEYWORD2	
-setTimer1					KEYWORD2
-getTimer1					KEYWORD2
-ackTimer1					KEYWORD2
-setTimer2					KEYWORD2
-getTimer2					KEYWORD2
-ackTimer2					KEYWORD2
-reset                       KEYWORD2
-isrunning					KEYWORD2			
-rtcStop						KEYWORD2
-rtcStart					KEYWORD2
-rtcBatteryLow				KEYWORD2
-setTwelveTwentyFourHour		KEYWORD2
-getTwelveTwentyFourHour		KEYWORD2	
-rtcReadReg					KEYWORD2
-rtcWriteReg					KEYWORD2
-setBatterySwitchover		KEYWORD2	
-stop_32768_clkout			KEYWORD2
-clearRtcInterruptFlags		KEYWORD2
+getAlarm	KEYWORD2
+setAlarm	KEYWORD2
+setWeekDayAlarm	KEYWORD2
+enableAlarm	KEYWORD2
+ackAlarm	KEYWORD2
+setTimer1	KEYWORD2
+getTimer1	KEYWORD2
+ackTimer1	KEYWORD2
+setTimer2	KEYWORD2
+getTimer2	KEYWORD2
+ackTimer2	KEYWORD2
+reset	KEYWORD2
+isrunning	KEYWORD2
+rtcStop	KEYWORD2
+rtcStart	KEYWORD2
+rtcBatteryLow	KEYWORD2
+setTwelveTwentyFourHour	KEYWORD2
+getTwelveTwentyFourHour	KEYWORD2
+rtcReadReg	KEYWORD2
+rtcWriteReg	KEYWORD2
+setBatterySwitchover	KEYWORD2
+stop_32768_clkout	KEYWORD2
+clearRtcInterruptFlags	KEYWORD2
 #######################################
 # Instances (KEYWORD2)
 #######################################
@@ -40,12 +40,12 @@ RTC	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-eSunday		LITERAL1
-eMonday		LITERAL1 
+eSunday	LITERAL1
+eMonday	LITERAL1 
 eTuesday	LITERAL1
 eWednesday	LITERAL1
 eThursday	LITERAL1
-eFriday		LITERAL1
+eFriday	LITERAL1
 eSaturday	LITERAL1
 eTB_4KHZ	LITERAL1
 eTB_64HZ	LITERAL1
